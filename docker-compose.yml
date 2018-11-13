@@ -1,0 +1,33 @@
+version: "2"
+services:
+  nginx:
+      build:
+          context: ./nginx
+      ports:
+          - "7002:80"
+      volumes:
+          - ./slim:/var/app/public
+  fpm:
+      build:
+          context: ./fpm
+      volumes:
+          - ./slim:/var/app/public
+      expose:
+          - "9000"
+      environment:
+          - "DB_HOST=db"
+          - "DB_DATABASE=slim_api"
+  db:
+      image: mariadb
+      environment:
+          - MYSQL_ROOT_PASSWORD=root
+          - MYSQL_DATABASE=slim_api
+      volumes:
+          - ./database:/var/lib/mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+     - PMA_ARBITRARY=1
+     - PMA_HOST=db
+    ports:
+     - 8001:80
